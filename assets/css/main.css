@@ -1,0 +1,111 @@
+@import "tailwindcss";
+@source "../src/**/*.{html,js,ts,jsx,tsx}";
+@plugin "daisyui";
+
+/* Custom styles for TransNet */
+.htmx-indicator {
+  opacity: 0;
+  transition: opacity 200ms ease-in;
+}
+
+.htmx-request .htmx-indicator {
+  opacity: 1;
+}
+
+.htmx-request.htmx-indicator {
+  opacity: 1;
+}
+
+/* Loading states */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* Exchange status indicators */
+.status-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.status-active {
+  background-color: #22c55e;
+}
+
+.status-maintenance {
+  background-color: #f59e0b;
+}
+
+.status-disabled {
+  background-color: #ef4444;
+}
+
+/* Network status cards */
+.network-card {
+  transition: all 200ms ease-in-out;
+}
+
+.network-card:hover {
+  transform: translateY(-2px);
+}
+
+.network-card.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Form enhancements */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Wallet selection */
+.wallet-option {
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+}
+
+.wallet-option:hover {
+  background-color: var(--base-200);
+}
+
+.wallet-option.selected {
+  background-color: var(--primary);
+  color: var(--primary-content);
+}
+
+/* Transaction history */
+.transaction-row {
+  border-bottom: 1px solid var(--base-300);
+}
+
+.transaction-row:last-child {
+  border-bottom: none;
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .mobile-stack > * {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .mobile-stack > *:last-child {
+    margin-bottom: 0;
+  }
+}

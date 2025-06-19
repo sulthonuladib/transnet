@@ -1,0 +1,46 @@
+{
+  "name": "transnet",
+  "version": "1.0.0",
+  "description": "CEX crypto withdraw system with multi-exchange support",
+  "main": "src/server/index.ts",
+  "module": "src/server/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run --watch src/server/index.tsx",
+    "start": "bun run src/server/index.tsx",
+    "build": "bun run build:assets && bun build src/server/index.tsx --outdir ./dist --target bun",
+    "build:assets": "bun run scripts/build-assets.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:push": "drizzle-kit push"
+  },
+  "keywords": ["crypto", "withdraw", "exchange", "cex", "mexc"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "drizzle-kit": "^0.30.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.7.0",
+    "@paralleldrive/cuid2": "^2.2.2",
+    "@tailwindcss/cli": "^4.1.10",
+    "daisyui": "^5.0.43",
+    "drizzle-orm": "^0.44.2",
+    "drizzle-zod": "^0.8.2",
+    "hono": "^4.8.0",
+    "htmx.org": "2.0.4",
+    "hyperscript.org": "^0.9.14",
+    "tailwindcss": "^4.1.10",
+    "zod": "^3.25.67"
+  },
+  "trustedDependencies": [
+    "@parcel/watcher",
+    "@tailwindcss/oxide"
+  ]
+}
