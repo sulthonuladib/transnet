@@ -21,7 +21,8 @@
   "license": "MIT",
   "devDependencies": {
     "@types/bun": "latest",
-    "drizzle-kit": "^0.30.0"
+    "better-sqlite3": "^11.10.0",
+    "drizzle-kit": "^0.31.1"
   },
   "peerDependencies": {
     "typescript": "^5"
@@ -41,6 +42,8 @@
   },
   "trustedDependencies": [
     "@parcel/watcher",
-    "@tailwindcss/oxide"
+    "@tailwindcss/oxide",
+    "better-sqlite3",
+    "esbuild"
   ]
 }
