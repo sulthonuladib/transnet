@@ -27,6 +27,8 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .cache
 *.tsbuildinfo
 
+database.db*
+
 # IntelliJ based IDEs
 .idea
 
