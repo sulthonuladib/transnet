@@ -120,11 +120,13 @@ interface RegisterFormProps {
     username?: string;
     email?: string;
     password?: string;
+    invitationCode?: string;
   };
   values?: {
     username?: string;
     email?: string;
     password?: string;
+    invitationCode?: string;
   };
 }
 
@@ -142,6 +144,26 @@ export const RegisterForm: FC<RegisterFormProps> = ({
           </div>
         )}
         <form hx-post='/register' hx-target='#main-content' hx-swap='innerHTML'>
+          <div class='form-control'>
+            <label class='label'>
+              <span class='label-text'>Invitation Code</span>
+            </label>
+            <input
+              type='text'
+              name='invitationCode'
+              placeholder='Enter invitation code'
+              class={`input input-bordered ${errors.invitationCode ? 'input-error' : ''}`}
+              value={values.invitationCode || ''}
+              required
+            />
+            {errors.invitationCode && (
+              <label class='label'>
+                <span class='label-text-alt text-error'>
+                  {errors.invitationCode}
+                </span>
+              </label>
+            )}
+          </div>
           <div class='form-control'>
             <label class='label'>
               <span class='label-text'>Username</span>

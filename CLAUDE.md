@@ -11,13 +11,11 @@ TransNet is a CEX (Centralized Exchange) crypto withdraw system built with moder
 ### Core Technologies
 
 - **Runtime**: Bun (JavaScript runtime & toolkit)
-
   - Context7 Library: `/oven-sh/bun` - Trust Score: 9.4, 2426 code snippets
   - Ultra-fast JavaScript runtime, bundler, test runner, and package manager all-in-one
   - Native bundling capabilities for CSS and client-side assets
 
 - **Backend Framework**: Hono (ultrafast web framework built on Web Standards)
-
   - Context7 Library: `/hono.dev-01d345b/llmstxt` - 2737 code snippets
   - Small, simple, and ultrafast web framework for any JavaScript runtime
   - Built on Web Standards, works seamlessly with Bun
@@ -30,7 +28,6 @@ TransNet is a CEX (Centralized Exchange) crypto withdraw system built with moder
 ### Frontend Technologies
 
 - **HTMX**: Hypermedia-driven architecture
-
   - Context7 Library: `/bigskysoftware/htmx` - Trust Score: 9.2, 632 code snippets
   - High power tools for HTML - enables modern web interactions without JavaScript frameworks
   - Used for dynamic content swapping, form submissions, and navigation
@@ -43,7 +40,6 @@ TransNet is a CEX (Centralized Exchange) crypto withdraw system built with moder
 ### Styling & UI
 
 - **Tailwind CSS 4**: Utility-first CSS framework
-
   - Context7 Library: `/tailwindlabs/tailwindcss.com` - Trust Score: 8.0, 2066 code snippets
   - Latest version with improved performance and new features
   - Utility-first approach for rapid UI development

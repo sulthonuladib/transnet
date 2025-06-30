@@ -184,6 +184,47 @@ export const withdrawHistory = sqliteTable('withdraw_history', {
   ),
 });
 
+// Invitation codes for registration
+export const invitationCodes = sqliteTable('invitation_codes', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  code: text('code').notNull().unique(), // The invitation code
+  createdBy: text('created_by')
+    .notNull()
+    .references(() => users.id),
+  organizationId: text('organization_id')
+    .notNull()
+    .references(() => organizations.id, { onDelete: 'cascade' }),
+  description: text('description'), // Optional description
+  maxUses: integer('max_uses').default(1), // Max number of times code can be used
+  usedCount: integer('used_count').default(0), // Number of times used
+  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(
+    () => new Date()
+  ),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(
+    () => new Date()
+  ),
+});
+
+// Invitation code usage tracking
+export const invitationCodeUsage = sqliteTable('invitation_code_usage', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  codeId: text('code_id')
+    .notNull()
+    .references(() => invitationCodes.id, { onDelete: 'cascade' }),
+  usedBy: text('used_by')
+    .notNull()
+    .references(() => users.id),
+  usedAt: integer('used_at', { mode: 'timestamp' }).$defaultFn(
+    () => new Date()
+  ),
+});
+
 // Activity log for audit trail
 export const activityLog = sqliteTable('activity_log', {
   id: text('id')
@@ -225,3 +266,7 @@ export type WithdrawHistory = typeof withdrawHistory.$inferSelect;
 export type NewWithdrawHistory = typeof withdrawHistory.$inferInsert;
 export type ActivityLog = typeof activityLog.$inferSelect;
 export type NewActivityLog = typeof activityLog.$inferInsert;
+export type InvitationCode = typeof invitationCodes.$inferSelect;
+export type NewInvitationCode = typeof invitationCodes.$inferInsert;
+export type InvitationCodeUsage = typeof invitationCodeUsage.$inferSelect;
+export type NewInvitationCodeUsage = typeof invitationCodeUsage.$inferInsert;

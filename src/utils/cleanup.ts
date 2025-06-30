@@ -7,7 +7,7 @@ import { eq, and, lt } from 'drizzle-orm';
  */
 export async function cleanupExpiredInvitations() {
   const now = new Date();
-  
+
   try {
     // Update expired invitations
     const result = await db
@@ -19,13 +19,15 @@ export async function cleanupExpiredInvitations() {
           lt(organizationInvitations.expiresAt, now)
         )
       );
-    
-    console.log(`[Cleanup] Marked ${result.changes || 0} invitations as expired`);
-    
+
+    console.log(
+      `[Cleanup] Marked ${result.changes || 0} invitations as expired`
+    );
+
     // Optional: Delete very old expired invitations (e.g., older than 30 days)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
+
     const deleteResult = await db
       .delete(organizationInvitations)
       .where(
@@ -34,9 +36,11 @@ export async function cleanupExpiredInvitations() {
           lt(organizationInvitations.expiresAt, thirtyDaysAgo)
         )
       );
-    
-    console.log(`[Cleanup] Deleted ${deleteResult.changes || 0} old expired invitations`);
-    
+
+    console.log(
+      `[Cleanup] Deleted ${deleteResult.changes || 0} old expired invitations`
+    );
+
     return {
       expired: result.changes || 0,
       deleted: deleteResult.changes || 0,
@@ -54,11 +58,14 @@ export async function cleanupExpiredInvitations() {
 export function setupCleanupTasks() {
   // Run cleanup on startup
   cleanupExpiredInvitations().catch(console.error);
-  
+
   // Run cleanup every 24 hours
-  setInterval(() => {
-    cleanupExpiredInvitations().catch(console.error);
-  }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
-  
+  setInterval(
+    () => {
+      cleanupExpiredInvitations().catch(console.error);
+    },
+    24 * 60 * 60 * 1000
+  ); // 24 hours in milliseconds
+
   console.log('[Cleanup] Scheduled periodic cleanup tasks');
 }

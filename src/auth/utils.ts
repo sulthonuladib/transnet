@@ -116,7 +116,7 @@ export async function registerUser(
 
   const result = await db.insert(users).values(newUser).returning();
   const user = result[0];
-  
+
   if (!user) {
     throw new Error('Failed to create user');
   }

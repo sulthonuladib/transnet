@@ -1,5 +1,9 @@
 import type { FC } from 'hono/jsx';
-import type { Organization, OrganizationMembership, User } from '../database/schema';
+import type {
+  Organization,
+  OrganizationMembership,
+  User,
+} from '../database/schema';
 
 interface OrganizationManagerProps {
   user: User;
@@ -46,7 +50,7 @@ export const OrganizationManager: FC<OrganizationManagerProps> = ({
               {organizations.map(({ membership, organization }) => (
                 <div
                   key={organization.id}
-                  class='flex items-center justify-between rounded-lg bg-base-300 p-4'
+                  class='bg-base-300 flex items-center justify-between rounded-lg p-4'
                 >
                   <div>
                     <h3 class='font-semibold'>{organization.name}</h3>
@@ -80,7 +84,9 @@ export const OrganizationManager: FC<OrganizationManagerProps> = ({
               ))}
             </div>
           ) : (
-            <p class='text-warning'>You are not a member of any organizations</p>
+            <p class='text-warning'>
+              You are not a member of any organizations
+            </p>
           )}
         </div>
       </div>
@@ -120,7 +126,8 @@ export const OrganizationManager: FC<OrganizationManagerProps> = ({
               />
               <label class='label'>
                 <span class='label-text-alt'>
-                  URL-friendly identifier (lowercase letters, numbers, and hyphens only)
+                  URL-friendly identifier (lowercase letters, numbers, and
+                  hyphens only)
                 </span>
               </label>
             </div>
@@ -272,7 +279,9 @@ export const OrganizationSettings: FC<OrganizationSettingsProps> = ({
                         {membership.status}
                       </span>
                     </td>
-                    <td>{new Date(membership.joinedAt).toLocaleDateString()}</td>
+                    <td>
+                      {new Date(membership.joinedAt).toLocaleDateString()}
+                    </td>
                     {isOwner && membership.role !== 'owner' && (
                       <td>
                         <button
@@ -299,7 +308,7 @@ export const OrganizationSettings: FC<OrganizationSettingsProps> = ({
         <div class='card bg-base-200 shadow-xl'>
           <div class='card-body'>
             <h2 class='card-title mb-4'>Invitations</h2>
-            
+
             {/* Create Invitation Form */}
             <form
               hx-post={`/api/organizations/${organization.id}/invitations`}
@@ -348,7 +357,9 @@ export const OrganizationSettings: FC<OrganizationSettingsProps> = ({
                       <tr key={invitation.id}>
                         <td>{invitation.email}</td>
                         <td>
-                          <span class='badge badge-primary'>{invitation.role}</span>
+                          <span class='badge badge-primary'>
+                            {invitation.role}
+                          </span>
                         </td>
                         <td>
                           <span
@@ -363,7 +374,9 @@ export const OrganizationSettings: FC<OrganizationSettingsProps> = ({
                             {invitation.status}
                           </span>
                         </td>
-                        <td>{new Date(invitation.expiresAt).toLocaleDateString()}</td>
+                        <td>
+                          {new Date(invitation.expiresAt).toLocaleDateString()}
+                        </td>
                         <td>
                           <code class='text-xs'>{invitation.token}</code>
                         </td>

@@ -91,6 +91,15 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = ({
                   </li>
                   <li>
                     <a
+                      hx-get='/invitations'
+                      hx-target='#main-content'
+                      hx-swap='innerHTML'
+                    >
+                      Invitations
+                    </a>
+                  </li>
+                  <li>
+                    <a
                       hx-get='/settings'
                       hx-target='#main-content'
                       hx-swap='innerHTML'

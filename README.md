@@ -71,7 +71,6 @@ A unified CEX (Centralized Exchange) crypto withdrawal system built with modern 
    Navigate to `http://localhost:3000`
 
 3. **Configure exchanges**
-
    - Go to Exchange Settings
    - Add your API keys for supported exchanges
    - Test connections before saving
