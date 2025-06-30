@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+bun.lock
+
+# Build outputs
+dist/
+build/
+src/public/
+
+# Database
+*.db
+*.sqlite
+
+# Storage
+storage/
+
+# Generated files
+**/*.min.js
+**/*.min.css
+
+# Config files that should maintain specific formatting
+drizzle.config.ts
+
+# Environment files
+.env
+.env.*
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

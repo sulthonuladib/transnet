@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @source "../src/**/*.{html,js,ts,jsx,tsx}";
 @plugin "daisyui";
 
@@ -14,6 +14,11 @@
 
 .htmx-request.htmx-indicator {
   opacity: 1;
+}
+
+/* Hide elements when HTMX is loading */
+.htmx-request .htmx-indicator-hide {
+  display: none;
 }
 
 /* Loading states */

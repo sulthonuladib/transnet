@@ -9,12 +9,15 @@ TransNet is a CEX (Centralized Exchange) crypto withdraw system built with moder
 ## Tech Stack
 
 ### Core Technologies
+
 - **Runtime**: Bun (JavaScript runtime & toolkit)
+
   - Context7 Library: `/oven-sh/bun` - Trust Score: 9.4, 2426 code snippets
   - Ultra-fast JavaScript runtime, bundler, test runner, and package manager all-in-one
   - Native bundling capabilities for CSS and client-side assets
 
 - **Backend Framework**: Hono (ultrafast web framework built on Web Standards)
+
   - Context7 Library: `/hono.dev-01d345b/llmstxt` - 2737 code snippets
   - Small, simple, and ultrafast web framework for any JavaScript runtime
   - Built on Web Standards, works seamlessly with Bun
@@ -25,7 +28,9 @@ TransNet is a CEX (Centralized Exchange) crypto withdraw system built with moder
   - Migration support for schema evolution
 
 ### Frontend Technologies
+
 - **HTMX**: Hypermedia-driven architecture
+
   - Context7 Library: `/bigskysoftware/htmx` - Trust Score: 9.2, 632 code snippets
   - High power tools for HTML - enables modern web interactions without JavaScript frameworks
   - Used for dynamic content swapping, form submissions, and navigation
@@ -36,7 +41,9 @@ TransNet is a CEX (Centralized Exchange) crypto withdraw system built with moder
   - Use for complex client-side interactions that require more than HTMX attributes
 
 ### Styling & UI
+
 - **Tailwind CSS 4**: Utility-first CSS framework
+
   - Context7 Library: `/tailwindlabs/tailwindcss.com` - Trust Score: 8.0, 2066 code snippets
   - Latest version with improved performance and new features
   - Utility-first approach for rapid UI development
@@ -50,6 +57,7 @@ TransNet is a CEX (Centralized Exchange) crypto withdraw system built with moder
 ## Commands
 
 ### Development
+
 ```bash
 # Install dependencies
 bun install
@@ -67,6 +75,7 @@ bun run db:studio      # Open Drizzle Studio for database management
 ```
 
 ### Production
+
 ```bash
 # Build for production
 bun run build
@@ -148,6 +157,7 @@ interface CEXInterface {
 ## Key Features
 
 ### 1. Exchange API Key Management
+
 - Secure storage of API keys per exchange
 - Test connection functionality before saving
 - Support for multiple exchanges (MEXC, Binance)
@@ -155,17 +165,20 @@ interface CEXInterface {
 - Testnet mode support
 
 ### 2. Multi-Exchange Support
+
 - Unified interface for multiple CEX platforms
 - Real-time data from configured exchanges
 - Automatic network status checking
 - Consolidated balance and coin information
 
 ### 3. Saved Wallet Management
+
 - Store frequently used wallet addresses
 - Label wallets for easy identification
 - Quick selection during withdrawals
 
 ### 4. Real-time Withdrawals
+
 - Live data from exchange APIs
 - Network status validation
 - Fee calculation and display
@@ -178,6 +191,7 @@ This project uses **Context7 MCP Server** for accessing external API documentati
 ### Tech Stack Documentation via Context7:
 
 #### Core Technologies:
+
 - **Bun**: `/oven-sh/bun` - Runtime, bundler, test runner documentation
 - **Hono**: `/hono.dev-01d345b/llmstxt` - Web framework patterns and best practices
 - **HTMX**: `/bigskysoftware/htmx` - Hypermedia interactions, swapping, navigation
@@ -188,16 +202,19 @@ This project uses **Context7 MCP Server** for accessing external API documentati
 - **Hono Zod Validator**: `/honojs/middleware` - Zod validation middleware for Hono
 
 #### Exchange APIs:
+
 - **MEXC**: `/suenot/mexc-docs-markdown` - Trust Score: 9.8, 130 code snippets
 - **Binance**: `/binance/binance-spot-api-docs` - Trust Score: 7.7, 1208 code snippets
 
 ### Common Query Patterns:
+
 1. **HTMX Issues**: Use topics like "hx-swap navigation", "hx-target swapping", "htmx attributes"
 2. **Exchange Integration**: "withdraw API authentication", "signature generation examples"
 3. **UI Components**: "daisyui modal", "tailwind responsive design"
 4. **Bun Usage**: "bun bundler", "bun runtime features"
 
 ### Usage Example:
+
 ```bash
 # Research HTMX swapping issues
 mcp__context7__get-library-docs("/bigskysoftware/htmx", "hx-swap navigation htmx attributes")
@@ -209,6 +226,7 @@ mcp__context7__get-library-docs("/saadeghi/daisyui", "modal dialog component")
 ## Development Guidelines
 
 ### Exchange Integration
+
 - When adding new exchanges, follow the CEXInterface pattern
 - Use Context7 to research the exchange's API documentation
 - Implement proper signature generation and authentication
@@ -216,11 +234,13 @@ mcp__context7__get-library-docs("/saadeghi/daisyui", "modal dialog component")
 - Follow the existing pattern in `mexc/client.ts` and `binance/client.ts`
 
 ### Database Operations
+
 - Use Drizzle ORM for all database interactions
 - Generate migrations for schema changes: `bun run db:generate`
 - Always run migrations before deploying: `bun run db:migrate`
 
 ### API Development
+
 - Follow Hono patterns for route definition
 - Use TypeScript for strong typing with Zod validation schemas
 - Implement proper error handling with validation middleware
@@ -228,6 +248,7 @@ mcp__context7__get-library-docs("/saadeghi/daisyui", "modal dialog component")
 - All routes are in `src/server/index.tsx`
 
 #### Validation with Zod:
+
 ```typescript
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
@@ -263,7 +284,9 @@ app.post('/api/withdraw',
 ```
 
 ### Frontend Development
+
 #### HTMX Best Practices:
+
 - **Navigation**: Use `hx-target="#main-content"` with `hx-swap="innerHTML"` for SPA-like navigation
 - **Forms**: Prefer `hx-post` over traditional form submissions for better UX
 - **Error Handling**: Return appropriate HTTP status codes and HTMX-friendly error messages
@@ -272,25 +295,36 @@ app.post('/api/withdraw',
 - **Server-Side Events**: Use response headers to trigger client-side events
 
 #### HTMX Navigation Pattern:
+
 ```tsx
 // In Layout.tsx - Navigation links with explicit swap
-<a hx-get="/withdraw" hx-target="#main-content" hx-swap="innerHTML">Withdraw</a>
+<a hx-get='/withdraw' hx-target='#main-content' hx-swap='innerHTML'>
+  Withdraw
+</a>;
 
 // In server routes - Detect HTMX requests and return appropriate content
 const isHtmxRequest = c.req.header('HX-Request');
 if (isHtmxRequest) {
-  return c.html(<WithdrawForm />);  // Content only for navigation
+  return c.html(<WithdrawForm />); // Content only for navigation
 }
-return c.html(<Layout><WithdrawForm /></Layout>);  // Full page for direct access
+return c.html(
+  <Layout>
+    <WithdrawForm />
+  </Layout>
+); // Full page for direct access
 ```
 
 #### Server-Side Event Triggers:
+
 HTMX allows servers to trigger client-side events via response headers:
 
 ```tsx
 // Trigger client-side events from server
 c.header('HX-Trigger', 'refreshBalance');
-c.header('HX-Trigger', '{"showNotification": {"message": "Success!", "type": "success"}}');
+c.header(
+  'HX-Trigger',
+  '{"showNotification": {"message": "Success!", "type": "success"}}'
+);
 
 // Multiple events
 c.header('HX-Trigger', 'refreshBalance, updateStatus');
@@ -301,6 +335,7 @@ c.header('HX-Trigger-After-Settle', 'highlightNew');
 ```
 
 #### Hyperscript Integration:
+
 For complex client-side interactions beyond HTMX capabilities:
 
 ```typescript
@@ -334,18 +369,21 @@ import 'hyperscript.org';
 ```
 
 #### DaisyUI Component Usage:
+
 - Follow DaisyUI 5 component patterns from Context7 documentation
 - Use semantic class names: `btn`, `card`, `modal`, `navbar`, etc.
 - Leverage theme system with `data-theme` attribute
 - Ensure accessibility with proper ARIA labels
 
 ### CSS/Styling
+
 - Use Tailwind utility classes
 - Leverage DaisyUI components when possible
 - Custom CSS only when necessary
 - Build assets with `bun run build:assets`
 
 ### Client-Side Development
+
 - Use TypeScript for all client-side code in `/assets/js/` and `/assets/scripts/`
 - Bundle client-side code using Bun's bundler: `bun build <input> --outfile <output>`
 - Refer to [Bun documentation](/oven-sh/bun) for bundling patterns and configurations
@@ -376,12 +414,14 @@ NODE_ENV=development
 ## Current Exchange Support
 
 ### MEXC
+
 - **Client**: `src/exchanges/mexc/client.ts`
 - **Authentication**: HMAC SHA256 signature
 - **Endpoints**: Account info, balances, networks, withdrawals
 - **Documentation**: Use Context7 with `/suenot/mexc-docs-markdown`
 
 ### Binance
+
 - **Client**: `src/exchanges/binance/client.ts`
 - **Authentication**: HMAC SHA256 signature
 - **Endpoints**: Account info, balances, networks, withdrawals
@@ -413,3 +453,8 @@ NODE_ENV=development
 ## Memories
 
 - Always use node modules bin folder if you want to run package command at ./node_modules/.bin
+- Always search at documentation using context7 mcp server everytime i tell you to do something technical or with the related technology
+
+```
+
+```

@@ -1,5 +1,13 @@
 import crypto from 'crypto';
-import type { CEXInterface, Coin, Balance, Network, WithdrawParams, WithdrawResult, NetworkStatus } from '../interfaces/base';
+import type {
+  CEXInterface,
+  Coin,
+  Balance,
+  Network,
+  WithdrawParams,
+  WithdrawResult,
+  NetworkStatus,
+} from '../interfaces/base';
 
 export class BinanceClient implements CEXInterface {
   public readonly name = 'Binance';
@@ -13,10 +21,17 @@ export class BinanceClient implements CEXInterface {
   }
 
   private createSignature(queryString: string): string {
-    return crypto.createHmac('sha256', this.apiSecret).update(queryString).digest('hex');
+    return crypto
+      .createHmac('sha256', this.apiSecret)
+      .update(queryString)
+      .digest('hex');
   }
 
-  private async makeRequest(endpoint: string, method: 'GET' | 'POST' = 'GET', params: Record<string, any> = {}): Promise<any> {
+  private async makeRequest(
+    endpoint: string,
+    method: 'GET' | 'POST' = 'GET',
+    params: Record<string, any> = {}
+  ): Promise<any> {
     const timestamp = Date.now();
     params.timestamp = timestamp;
     const queryString = new URLSearchParams(params).toString();
@@ -34,7 +49,9 @@ export class BinanceClient implements CEXInterface {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Binance API error: ${response.status} ${response.statusText} - ${errorText}`);
+      throw new Error(
+        `Binance API error: ${response.status} ${response.statusText} - ${errorText}`
+      );
     }
 
     return response.json();
@@ -67,8 +84,14 @@ export class BinanceClient implements CEXInterface {
       if (config.networkList && Array.isArray(config.networkList)) {
         for (const network of config.networkList) {
           coin.networks.push(network.network);
-          coin.minWithdraw = Math.min(coin.minWithdraw, parseFloat(network.withdrawMin) || 0);
-          coin.maxWithdraw = Math.max(coin.maxWithdraw, parseFloat(network.withdrawMax) || 0);
+          coin.minWithdraw = Math.min(
+            coin.minWithdraw,
+            parseFloat(network.withdrawMin) || 0
+          );
+          coin.maxWithdraw = Math.max(
+            coin.maxWithdraw,
+            parseFloat(network.withdrawMax) || 0
+          );
           coin.withdrawEnabled = coin.withdrawEnabled || network.withdrawEnable;
         }
       }
@@ -81,16 +104,20 @@ export class BinanceClient implements CEXInterface {
 
       if (coinMap.has(baseAsset)) {
         const coin = coinMap.get(baseAsset);
-        coin.tradingEnabled = coin.tradingEnabled || symbol.status === 'TRADING';
+        coin.tradingEnabled =
+          coin.tradingEnabled || symbol.status === 'TRADING';
       }
 
       if (coinMap.has(quoteAsset)) {
         const coin = coinMap.get(quoteAsset);
-        coin.tradingEnabled = coin.tradingEnabled || symbol.status === 'TRADING';
+        coin.tradingEnabled =
+          coin.tradingEnabled || symbol.status === 'TRADING';
       }
     }
 
-    return Array.from(coinMap.values()).filter(coin => coin.networks.length > 0);
+    return Array.from(coinMap.values()).filter(
+      coin => coin.networks.length > 0
+    );
   }
 
   async getBalance(coin?: string): Promise<Balance[]> {
@@ -127,7 +154,8 @@ export class BinanceClient implements CEXInterface {
       precision: network.withdrawIntegerMultiple || 8,
       memo: network.memoRegex ? true : false,
       memoName: network.memoRegex ? 'memo' : undefined,
-      status: network.withdrawEnable && network.depositEnable ? 'active' : 'disabled',
+      status:
+        network.withdrawEnable && network.depositEnable ? 'active' : 'disabled',
       estimatedArrivalTime: undefined,
     }));
   }
@@ -145,7 +173,11 @@ export class BinanceClient implements CEXInterface {
         withdrawParams.addressTag = params.tag;
       }
 
-      const data = await this.makeRequest('/sapi/v1/capital/withdraw/apply', 'POST', withdrawParams);
+      const data = await this.makeRequest(
+        '/sapi/v1/capital/withdraw/apply',
+        'POST',
+        withdrawParams
+      );
 
       return {
         success: true,
@@ -155,12 +187,16 @@ export class BinanceClient implements CEXInterface {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : 'Unknown error occurred',
       };
     }
   }
 
-  async checkNetworkStatus(coin: string, network: string): Promise<NetworkStatus> {
+  async checkNetworkStatus(
+    coin: string,
+    network: string
+  ): Promise<NetworkStatus> {
     const networks = await this.getNetworks(coin);
     const targetNetwork = networks.find(n => n.network === network);
 
@@ -189,7 +225,11 @@ export class BinanceClient implements CEXInterface {
       params.coin = coin;
     }
 
-    const data = await this.makeRequest('/sapi/v1/capital/withdraw/history', 'GET', params);
+    const data = await this.makeRequest(
+      '/sapi/v1/capital/withdraw/history',
+      'GET',
+      params
+    );
     return data;
   }
 

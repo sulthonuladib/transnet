@@ -14,7 +14,7 @@ A unified CEX (Centralized Exchange) crypto withdrawal system built with modern 
 ## 🚀 Tech Stack
 
 - **Runtime**: [Bun](https://bun.sh/) - Ultra-fast JavaScript runtime and toolkit
-- **Framework**: [Hono](https://hono.dev/) - Ultrafast web framework built on Web Standards  
+- **Framework**: [Hono](https://hono.dev/) - Ultrafast web framework built on Web Standards
 - **Database**: SQLite with [Drizzle ORM](https://orm.drizzle.team/) - TypeScript-first ORM
 - **Frontend**: [HTMX](https://htmx.org/) + [Hyperscript](https://hyperscript.org/) - Modern hypermedia architecture
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) + [DaisyUI 5](https://daisyui.com/) - Utility-first CSS with components
@@ -29,23 +29,27 @@ A unified CEX (Centralized Exchange) crypto withdrawal system built with modern 
 ## 🛠️ Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd transnet
    ```
 
 2. **Install dependencies**
+
    ```bash
    bun install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
    ```
 
 4. **Initialize database**
+
    ```bash
    bun run db:migrate
    ```
@@ -58,6 +62,7 @@ A unified CEX (Centralized Exchange) crypto withdrawal system built with modern 
 ## 🚀 Quick Start
 
 1. **Start development server**
+
    ```bash
    bun run dev
    ```
@@ -66,6 +71,7 @@ A unified CEX (Centralized Exchange) crypto withdrawal system built with modern 
    Navigate to `http://localhost:3000`
 
 3. **Configure exchanges**
+
    - Go to Exchange Settings
    - Add your API keys for supported exchanges
    - Test connections before saving
@@ -77,12 +83,14 @@ A unified CEX (Centralized Exchange) crypto withdrawal system built with modern 
 ## 📝 Available Scripts
 
 ### Development
+
 ```bash
 bun run dev          # Start development server with hot reload
 bun run build:assets # Build CSS and client-side assets
 ```
 
 ### Database
+
 ```bash
 bun run db:generate  # Generate migration from schema changes
 bun run db:migrate   # Run pending migrations
@@ -91,6 +99,7 @@ bun run db:push      # Push schema changes directly to database
 ```
 
 ### Production
+
 ```bash
 bun run build       # Build for production
 bun run start       # Start production server
@@ -151,6 +160,7 @@ API keys are managed through the web interface:
 ## 🔌 Supported Exchanges
 
 ### MEXC
+
 - ✅ Account balances
 - ✅ Supported coins and networks
 - ✅ Withdrawal functionality
@@ -158,7 +168,8 @@ API keys are managed through the web interface:
 - ✅ Transaction history
 
 ### Binance
-- ✅ Account balances  
+
+- ✅ Account balances
 - ✅ Supported coins and networks
 - ✅ Withdrawal functionality
 - ✅ Network status checking
@@ -182,11 +193,13 @@ API keys are managed through the web interface:
 ## 📱 Usage
 
 ### Managing Wallets
+
 1. Go to **Wallet Manager**
 2. Add frequently used addresses with labels
 3. Select wallets quickly during withdrawals
 
 ### Making Withdrawals
+
 1. Navigate to **Withdraw**
 2. Select exchange and coin
 3. Choose or enter wallet address
@@ -194,6 +207,7 @@ API keys are managed through the web interface:
 5. Review fees and confirm withdrawal
 
 ### Viewing History
+
 1. Check **Transaction History**
 2. Filter by exchange, coin, or status
 3. Track withdrawal progress in real-time
@@ -236,4 +250,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Note**: This is a development tool for personal use. Always verify withdrawals on exchange platforms and never share your API keys. Use testnet environments when possible during development.
-

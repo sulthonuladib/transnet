@@ -1,5 +1,13 @@
 import crypto from 'crypto';
-import type { CEXInterface, Coin, Balance, Network, WithdrawParams, WithdrawResult, NetworkStatus } from '../interfaces/base';
+import type {
+  CEXInterface,
+  Coin,
+  Balance,
+  Network,
+  WithdrawParams,
+  WithdrawResult,
+  NetworkStatus,
+} from '../interfaces/base';
 
 export class MEXCClient implements CEXInterface {
   public readonly name = 'MEXC';
@@ -14,10 +22,18 @@ export class MEXCClient implements CEXInterface {
 
   private createSignature(queryString: string, timestamp: number): string {
     const message = `${queryString}&timestamp=${timestamp}`;
-    return crypto.createHmac('sha256', this.apiSecret).update(message).digest('hex').toLowerCase();
+    return crypto
+      .createHmac('sha256', this.apiSecret)
+      .update(message)
+      .digest('hex')
+      .toLowerCase();
   }
 
-  private async makeRequest(endpoint: string, method: 'GET' | 'POST' = 'GET', params: Record<string, any> = {}): Promise<any> {
+  private async makeRequest(
+    endpoint: string,
+    method: 'GET' | 'POST' = 'GET',
+    params: Record<string, any> = {}
+  ): Promise<any> {
     const timestamp = Date.now();
     const queryString = new URLSearchParams(params).toString();
     const signature = this.createSignature(queryString, timestamp);
@@ -33,7 +49,9 @@ export class MEXCClient implements CEXInterface {
     });
 
     if (!response.ok) {
-      throw new Error(`MEXC API error: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `MEXC API error: ${response.status} ${response.statusText}`
+      );
     }
 
     return response.json();
@@ -41,7 +59,9 @@ export class MEXCClient implements CEXInterface {
 
   async getSupportedCoins(): Promise<Coin[]> {
     const data = await this.makeRequest('/api/v3/exchangeInfo');
-    const capitalConfig = await this.makeRequest('/api/v3/capital/config/getall');
+    const capitalConfig = await this.makeRequest(
+      '/api/v3/capital/config/getall'
+    );
 
     const coinMap = new Map<string, any>();
 
@@ -66,8 +86,14 @@ export class MEXCClient implements CEXInterface {
       if (config.networkList && Array.isArray(config.networkList)) {
         for (const network of config.networkList) {
           coin.networks.push(network.network);
-          coin.minWithdraw = Math.min(coin.minWithdraw, parseFloat(network.withdrawMin) || 0);
-          coin.maxWithdraw = Math.max(coin.maxWithdraw, parseFloat(network.withdrawMax) || 0);
+          coin.minWithdraw = Math.min(
+            coin.minWithdraw,
+            parseFloat(network.withdrawMin) || 0
+          );
+          coin.maxWithdraw = Math.max(
+            coin.maxWithdraw,
+            parseFloat(network.withdrawMax) || 0
+          );
           coin.withdrawEnabled = coin.withdrawEnabled || network.withdrawEnable;
         }
       }
@@ -80,16 +106,20 @@ export class MEXCClient implements CEXInterface {
 
       if (coinMap.has(baseAsset)) {
         const coin = coinMap.get(baseAsset);
-        coin.tradingEnabled = coin.tradingEnabled || symbol.status === 'TRADING';
+        coin.tradingEnabled =
+          coin.tradingEnabled || symbol.status === 'TRADING';
       }
 
       if (coinMap.has(quoteAsset)) {
         const coin = coinMap.get(quoteAsset);
-        coin.tradingEnabled = coin.tradingEnabled || symbol.status === 'TRADING';
+        coin.tradingEnabled =
+          coin.tradingEnabled || symbol.status === 'TRADING';
       }
     }
 
-    return Array.from(coinMap.values()).filter(coin => coin.networks.length > 0);
+    return Array.from(coinMap.values()).filter(
+      coin => coin.networks.length > 0
+    );
   }
 
   async getBalance(coin?: string): Promise<Balance[]> {
@@ -107,9 +137,13 @@ export class MEXCClient implements CEXInterface {
   }
 
   async getNetworks(coin: string): Promise<Network[]> {
-    const capitalConfig = await this.makeRequest('/api/v3/capital/config/getall');
+    const capitalConfig = await this.makeRequest(
+      '/api/v3/capital/config/getall'
+    );
 
-    const coinConfig = capitalConfig.find((config: any) => config.coin === coin);
+    const coinConfig = capitalConfig.find(
+      (config: any) => config.coin === coin
+    );
     if (!coinConfig || !coinConfig.networkList) {
       return [];
     }
@@ -124,9 +158,13 @@ export class MEXCClient implements CEXInterface {
       minWithdraw: parseFloat(network.withdrawMin) || 0,
       maxWithdraw: parseFloat(network.withdrawMax) || 0,
       precision: 8, // Default precision
-      memo: network.withdrawTips?.includes('MEMO') || network.depositTips?.includes('MEMO') || false,
+      memo:
+        network.withdrawTips?.includes('MEMO') ||
+        network.depositTips?.includes('MEMO') ||
+        false,
       memoName: network.withdrawTips?.includes('MEMO') ? 'memo' : undefined,
-      status: network.withdrawEnable && network.depositEnable ? 'active' : 'disabled',
+      status:
+        network.withdrawEnable && network.depositEnable ? 'active' : 'disabled',
       estimatedArrivalTime: undefined,
     }));
   }
@@ -144,7 +182,11 @@ export class MEXCClient implements CEXInterface {
         withdrawParams.memo = params.tag;
       }
 
-      const data = await this.makeRequest('/api/v3/capital/withdraw', 'POST', withdrawParams);
+      const data = await this.makeRequest(
+        '/api/v3/capital/withdraw',
+        'POST',
+        withdrawParams
+      );
 
       return {
         success: true,
@@ -154,12 +196,16 @@ export class MEXCClient implements CEXInterface {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : 'Unknown error occurred',
       };
     }
   }
 
-  async checkNetworkStatus(coin: string, network: string): Promise<NetworkStatus> {
+  async checkNetworkStatus(
+    coin: string,
+    network: string
+  ): Promise<NetworkStatus> {
     const networks = await this.getNetworks(coin);
     const targetNetwork = networks.find(n => n.network === network);
 
@@ -188,7 +234,11 @@ export class MEXCClient implements CEXInterface {
       params.coin = coin;
     }
 
-    const data = await this.makeRequest('/api/v3/capital/withdraw/history', 'GET', params);
+    const data = await this.makeRequest(
+      '/api/v3/capital/withdraw/history',
+      'GET',
+      params
+    );
     return data;
   }
 

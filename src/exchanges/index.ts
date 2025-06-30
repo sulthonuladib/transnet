@@ -4,7 +4,12 @@ import type { CEXInterface } from './interfaces/base';
 
 // Exchange factory to create client instances
 export class ExchangeFactory {
-  static createClient(exchangeName: string, apiKey: string, apiSecret: string, passphrase?: string): CEXInterface {
+  static createClient(
+    exchangeName: string,
+    apiKey: string,
+    apiSecret: string,
+    passphrase?: string
+  ): CEXInterface {
     switch (exchangeName.toLowerCase()) {
       case 'mexc':
         return new MEXCClient(apiKey, apiSecret);
