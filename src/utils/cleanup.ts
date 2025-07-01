@@ -9,41 +9,72 @@ export async function cleanupExpiredInvitations() {
   const now = new Date();
 
   try {
-    // Update expired invitations
-    const result = await db
-      .update(organizationInvitations)
-      .set({ status: 'expired' })
+    // Find expired invitations before updating
+    const expiredInvitations = await db
+      .select({ id: organizationInvitations.id })
+      .from(organizationInvitations)
       .where(
         and(
           eq(organizationInvitations.status, 'pending'),
           lt(organizationInvitations.expiresAt, now)
         )
-      );
+      )
+      .execute();
+
+    // Update expired invitations
+    if (expiredInvitations.length > 0) {
+      await db
+        .update(organizationInvitations)
+        .set({ status: 'expired' })
+        .where(
+          and(
+            eq(organizationInvitations.status, 'pending'),
+            lt(organizationInvitations.expiresAt, now)
+          )
+        )
+        .execute();
+    }
 
     console.log(
-      `[Cleanup] Marked ${result.changes || 0} invitations as expired`
+      `[Cleanup] Marked ${expiredInvitations.length} invitations as expired`
     );
 
     // Optional: Delete very old expired invitations (e.g., older than 30 days)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const deleteResult = await db
-      .delete(organizationInvitations)
+    // Find old invitations before deleting
+    const oldInvitations = await db
+      .select({ id: organizationInvitations.id })
+      .from(organizationInvitations)
       .where(
         and(
           eq(organizationInvitations.status, 'expired'),
           lt(organizationInvitations.expiresAt, thirtyDaysAgo)
         )
-      );
+      )
+      .execute();
+
+    // Delete old invitations
+    if (oldInvitations.length > 0) {
+      await db
+        .delete(organizationInvitations)
+        .where(
+          and(
+            eq(organizationInvitations.status, 'expired'),
+            lt(organizationInvitations.expiresAt, thirtyDaysAgo)
+          )
+        )
+        .execute();
+    }
 
     console.log(
-      `[Cleanup] Deleted ${deleteResult.changes || 0} old expired invitations`
+      `[Cleanup] Deleted ${oldInvitations.length} old expired invitations`
     );
 
     return {
-      expired: result.changes || 0,
-      deleted: deleteResult.changes || 0,
+      expired: expiredInvitations.length,
+      deleted: oldInvitations.length,
     };
   } catch (error) {
     console.error('[Cleanup] Error cleaning up invitations:', error);

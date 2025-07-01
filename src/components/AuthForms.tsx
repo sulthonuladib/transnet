@@ -147,14 +147,14 @@ export const RegisterForm: FC<RegisterFormProps> = ({
           <div class='form-control'>
             <label class='label'>
               <span class='label-text'>Invitation Code</span>
+              <span class='label-text-alt text-base-content/60'>(Optional)</span>
             </label>
             <input
               type='text'
               name='invitationCode'
-              placeholder='Enter invitation code'
+              placeholder='Enter invitation code (leave empty to join later)'
               class={`input input-bordered ${errors.invitationCode ? 'input-error' : ''}`}
               value={values.invitationCode || ''}
-              required
             />
             {errors.invitationCode && (
               <label class='label'>
@@ -163,6 +163,11 @@ export const RegisterForm: FC<RegisterFormProps> = ({
                 </span>
               </label>
             )}
+            <label class='label'>
+              <span class='label-text-alt text-base-content/60'>
+                You can join an organization later from your dashboard
+              </span>
+            </label>
           </div>
           <div class='form-control'>
             <label class='label'>

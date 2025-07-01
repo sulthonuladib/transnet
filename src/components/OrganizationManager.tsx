@@ -242,7 +242,7 @@ export const OrganizationSettings: FC<OrganizationSettingsProps> = ({
             )}
             <p>
               <strong>Created:</strong>{' '}
-              {new Date(organization.createdAt).toLocaleDateString()}
+              {organization.createdAt ? new Date(organization.createdAt).toLocaleDateString() : 'N/A'}
             </p>
           </div>
         </div>
@@ -280,7 +280,7 @@ export const OrganizationSettings: FC<OrganizationSettingsProps> = ({
                       </span>
                     </td>
                     <td>
-                      {new Date(membership.joinedAt).toLocaleDateString()}
+                      {membership.joinedAt ? new Date(membership.joinedAt).toLocaleDateString() : 'N/A'}
                     </td>
                     {isOwner && membership.role !== 'owner' && (
                       <td>

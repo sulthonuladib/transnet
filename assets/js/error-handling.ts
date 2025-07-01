@@ -1,6 +1,6 @@
 declare global {
   interface Window {
-    htmx2: any;
+    htmx: any;
   }
 }
 
@@ -17,7 +17,7 @@ interface ToastTrigger {
 }
 
 // Configure HTMX to accept all status codes for swapping
-window.htmx2.config.responseHandling = [{ code: '.*', swap: true }];
+window.htmx.config.responseHandling = [{ code: '.*', swap: true }];
 
 // Client-side event listener for toast notifications
 document.addEventListener('htmx:responseError', function (evt: any) {

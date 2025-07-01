@@ -37,9 +37,9 @@ export async function createOrganization(
     .select()
     .from(organizations)
     .where(eq(organizations.slug, slug))
-    .get();
+    .execute();
 
-  if (existingOrg) {
+  if (existingOrg.length > 0) {
     throw new Error('Organization slug already exists');
   }
 
@@ -58,11 +58,12 @@ export async function createOrganization(
 }
 
 export async function getOrganizationBySlug(slug: string) {
-  return await db
+  const result = await db
     .select()
     .from(organizations)
     .where(eq(organizations.slug, slug))
-    .get();
+    .execute();
+  return result[0];
 }
 
 // User registration with optional organization support
@@ -75,24 +76,24 @@ export async function registerUser(
   lastName?: string
 ) {
   // Check if username already exists globally
-  const existingUser = await db
+  const existingUsers = await db
     .select()
     .from(users)
     .where(eq(users.username, username))
-    .get();
+    .execute();
 
-  if (existingUser) {
+  if (existingUsers.length > 0) {
     throw new Error('Username already exists');
   }
 
   // Check if email already exists globally
-  const existingEmail = await db
+  const existingEmails = await db
     .select()
     .from(users)
     .where(eq(users.email, email))
-    .get();
+    .execute();
 
-  if (existingEmail) {
+  if (existingEmails.length > 0) {
     throw new Error('Email already exists');
   }
 
@@ -143,12 +144,13 @@ export async function authenticateUser(
   organizationSlug?: string
 ) {
   // Find user by username
-  const user = await db
+  const userResult = await db
     .select()
     .from(users)
     .where(and(eq(users.username, username), eq(users.isActive, true)))
-    .get();
+    .execute();
 
+  const user = userResult[0];
   if (!user || !verifyPassword(password, user.passwordHash)) {
     throw new Error('Invalid credentials');
   }
@@ -161,7 +163,7 @@ export async function authenticateUser(
     }
 
     // Check if user is a member of this organization
-    const membership = await db
+    const membershipResult = await db
       .select()
       .from(organizationMemberships)
       .where(
@@ -171,9 +173,9 @@ export async function authenticateUser(
           eq(organizationMemberships.status, 'active')
         )
       )
-      .get();
+      .execute();
 
-    if (!membership) {
+    if (membershipResult.length === 0) {
       throw new Error('User is not a member of this organization');
     }
 
@@ -198,7 +200,8 @@ export async function authenticateUser(
 
 // Helper to get user with current organization details
 export async function getUserWithOrganization(userId: string) {
-  const user = await db.select().from(users).where(eq(users.id, userId)).get();
+  const userResult = await db.select().from(users).where(eq(users.id, userId)).execute();
+  const user = userResult[0];
 
   if (!user) {
     return null;
@@ -207,11 +210,12 @@ export async function getUserWithOrganization(userId: string) {
   // If user has a current organization, get it
   let organization = null;
   if (user.currentOrganizationId) {
-    organization = await db
+    const orgResult = await db
       .select()
       .from(organizations)
       .where(eq(organizations.id, user.currentOrganizationId))
-      .get();
+      .execute();
+    organization = orgResult[0] || null;
   }
 
   return {
@@ -248,7 +252,7 @@ export async function switchUserOrganization(
   organizationId: string
 ) {
   // Verify user is a member of the organization
-  const membership = await db
+  const membershipResult = await db
     .select()
     .from(organizationMemberships)
     .where(
@@ -258,9 +262,9 @@ export async function switchUserOrganization(
         eq(organizationMemberships.status, 'active')
       )
     )
-    .get();
+    .execute();
 
-  if (!membership) {
+  if (membershipResult.length === 0) {
     throw new Error('User is not a member of this organization');
   }
 

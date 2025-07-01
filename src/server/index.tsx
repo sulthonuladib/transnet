@@ -326,47 +326,44 @@ app.post('/register', async c => {
   const formData = await c.req.formData();
   const invitationCode = formData.get('invitationCode') as string;
 
-  // Check if invitation code is provided
-  if (!invitationCode) {
-    return c.html(
-      <RegisterForm
-        errors={{ general: 'Invitation code is required' }}
-        values={Object.fromEntries(formData)}
-      />,
-      400
-    );
-  }
+  // Optional: Validate invitation code if provided
+  let validatedOrgSlug: string | undefined = undefined;
+  let codeValidation: any = null;
+  
+  if (invitationCode && invitationCode.trim() !== '') {
+    // Get demo organization for code validation
+    const demoOrg = await db
+      .select()
+      .from(organizations)
+      .where(eq(organizations.slug, 'demo'))
+      .get();
 
-  // Get demo organization for code validation
-  const demoOrg = await db
-    .select()
-    .from(organizations)
-    .where(eq(organizations.slug, 'demo'))
-    .get();
+    if (!demoOrg) {
+      return c.html(
+        <RegisterForm
+          errors={{ general: 'System not properly configured' }}
+          values={Object.fromEntries(formData)}
+        />,
+        500
+      );
+    }
 
-  if (!demoOrg) {
-    return c.html(
-      <RegisterForm
-        errors={{ general: 'System not properly configured' }}
-        values={Object.fromEntries(formData)}
-      />,
-      500
+    // Validate invitation code
+    codeValidation = await validateInvitationCode(
+      invitationCode,
+      demoOrg.id
     );
-  }
-
-  // Validate invitation code
-  const codeValidation = await validateInvitationCode(
-    invitationCode,
-    demoOrg.id
-  );
-  if (!codeValidation.valid) {
-    return c.html(
-      <RegisterForm
-        errors={{ general: codeValidation.error }}
-        values={Object.fromEntries(formData)}
-      />,
-      400
-    );
+    if (!codeValidation.valid) {
+      return c.html(
+        <RegisterForm
+          errors={{ invitationCode: codeValidation.error }}
+          values={Object.fromEntries(formData)}
+        />,
+        400
+      );
+    }
+    
+    validatedOrgSlug = demoOrg.slug;
   }
 
   const result = registerSchema.safeParse({
@@ -395,29 +392,34 @@ app.post('/register', async c => {
 
   try {
     const { username, email, password, firstName, lastName } = result.data;
+    
+    // Register user - with organization if invitation code was valid, or without if not
     const user = await registerUser(
       username,
       email,
       password,
-      demoOrg.id, // Join the demo organization
+      validatedOrgSlug, // Will be undefined if no invitation code provided
       firstName,
       lastName
     );
 
-    // Increment invitation code usage
-    await db
-      .update(invitationCodes)
-      .set({
-        usedCount: codeValidation.code!.usedCount + 1,
-        updatedAt: new Date(),
-      })
-      .where(eq(invitationCodes.id, codeValidation.code!.id));
+    // Only track invitation code usage if one was provided and validated
+    if (validatedOrgSlug && codeValidation.code) {
+      // Increment invitation code usage
+      await db
+        .update(invitationCodes)
+        .set({
+          usedCount: (codeValidation.code.usedCount || 0) + 1,
+          updatedAt: new Date(),
+        })
+        .where(eq(invitationCodes.id, codeValidation.code.id));
 
-    // Track invitation code usage
-    await db.insert(invitationCodeUsage).values({
-      codeId: codeValidation.code!.id,
-      usedBy: user.id,
-    });
+      // Track invitation code usage
+      await db.insert(invitationCodeUsage).values({
+        codeId: codeValidation.code.id,
+        usedBy: user.id,
+      });
+    }
 
     const token = generateToken(user.id);
 
@@ -1411,7 +1413,7 @@ app.post('/api/organizations/create', authMiddleware, async c => {
     // Create owner membership
     await db.insert(organizationMemberships).values({
       userId: user!.id,
-      organizationId: organization.id,
+      organizationId: organization!.id,
       role: 'owner',
       status: 'active',
     });
@@ -1419,7 +1421,7 @@ app.post('/api/organizations/create', authMiddleware, async c => {
     // Set as current organization
     await db
       .update(users)
-      .set({ currentOrganizationId: organization.id })
+      .set({ currentOrganizationId: organization!.id })
       .where(eq(users.id, user!.id));
 
     c.header(
@@ -2342,7 +2344,7 @@ function generateInvitationCode(): string {
 
 // Helper function to validate invitation code
 async function validateInvitationCode(code: string, organizationId: string) {
-  const inviteCode = await db
+  const inviteCodeResult = await db
     .select()
     .from(invitationCodes)
     .where(
@@ -2352,7 +2354,9 @@ async function validateInvitationCode(code: string, organizationId: string) {
         eq(invitationCodes.isActive, true)
       )
     )
-    .get();
+    .execute();
+  
+  const inviteCode = inviteCodeResult[0];
 
   if (!inviteCode) {
     return { valid: false, error: 'Invalid invitation code' };
@@ -2362,7 +2366,7 @@ async function validateInvitationCode(code: string, organizationId: string) {
     return { valid: false, error: 'Invitation code has expired' };
   }
 
-  if (inviteCode.usedCount >= inviteCode.maxUses) {
+  if ((inviteCode.usedCount || 0) >= (inviteCode.maxUses || 0)) {
     return { valid: false, error: 'Invitation code has reached maximum uses' };
   }
 
@@ -2520,7 +2524,7 @@ app.patch('/api/invitation-codes/:id/toggle', authMiddleware, async c => {
 
     // Return updated row
     const isExpired = new Date(updatedCode.expiresAt) < new Date();
-    const isMaxedOut = updatedCode.usedCount >= updatedCode.maxUses;
+    const isMaxedOut = (updatedCode.usedCount || 0) >= (updatedCode.maxUses || 0);
     const canUse = updatedCode.isActive && !isExpired && !isMaxedOut;
 
     return c.html(
@@ -2538,12 +2542,12 @@ app.patch('/api/invitation-codes/:id/toggle', authMiddleware, async c => {
         <td>
           <div class='flex items-center gap-2'>
             <span class={`badge ${isMaxedOut ? 'badge-error' : 'badge-info'}`}>
-              {updatedCode.usedCount}/{updatedCode.maxUses}
+              {updatedCode.usedCount || 0}/{updatedCode.maxUses || 0}
             </span>
             <progress
               class={`progress w-16 ${isMaxedOut ? 'progress-error' : 'progress-info'}`}
-              value={updatedCode.usedCount}
-              max={updatedCode.maxUses}
+              value={updatedCode.usedCount || 0}
+              max={updatedCode.maxUses || 0}
             ></progress>
           </div>
         </td>

@@ -3,12 +3,12 @@ import type { FC } from 'hono/jsx';
 interface InvitationCode {
   id: string;
   code: string;
-  description?: string;
-  maxUses: number;
-  usedCount: number;
-  expiresAt: string;
-  isActive: boolean;
-  createdAt: string;
+  description?: string | null;
+  maxUses: number | null;
+  usedCount: number | null;
+  expiresAt: string | Date;
+  isActive: boolean | null;
+  createdAt: string | Date | null;
 }
 
 export const InvitationManager: FC = () => {
@@ -170,7 +170,7 @@ export const InvitationCodeList: FC<InvitationCodeListProps> = ({ codes }) => {
         <tbody>
           {codes.map(code => {
             const isExpired = new Date(code.expiresAt) < new Date();
-            const isMaxedOut = code.usedCount >= code.maxUses;
+            const isMaxedOut = (code.usedCount || 0) >= (code.maxUses || 0);
             const canUse = code.isActive && !isExpired && !isMaxedOut;
 
             return (
@@ -190,12 +190,12 @@ export const InvitationCodeList: FC<InvitationCodeListProps> = ({ codes }) => {
                     <span
                       class={`badge ${isMaxedOut ? 'badge-error' : 'badge-info'}`}
                     >
-                      {code.usedCount}/{code.maxUses}
+                      {code.usedCount || 0}/{code.maxUses || 0}
                     </span>
                     <progress
                       class={`progress w-16 ${isMaxedOut ? 'progress-error' : 'progress-info'}`}
-                      value={code.usedCount}
-                      max={code.maxUses}
+                      value={code.usedCount || 0}
+                      max={code.maxUses || 0}
                     ></progress>
                   </div>
                 </td>
