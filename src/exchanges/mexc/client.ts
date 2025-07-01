@@ -20,8 +20,10 @@ export class MEXCClient implements CEXInterface {
     this.apiSecret = apiSecret;
   }
 
-  private createSignature(queryString: string, timestamp: number): string {
-    const message = `${queryString}&timestamp=${timestamp}`;
+  private createSignature(timestamp: number, querystring?: string): string {
+    const message = querystring
+      ? `${querystring}&timestamp=${timestamp}`
+      : `timestamp=${timestamp}`;
     return crypto
       .createHmac('sha256', this.apiSecret)
       .update(message)
@@ -36,7 +38,8 @@ export class MEXCClient implements CEXInterface {
   ): Promise<any> {
     const timestamp = Date.now();
     const queryString = new URLSearchParams(params).toString();
-    const signature = this.createSignature(queryString, timestamp);
+    console.log(queryString);
+    const signature = this.createSignature(timestamp, queryString);
 
     const url = `${this.baseURL}${endpoint}?${queryString}&timestamp=${timestamp}&signature=${signature}`;
 
@@ -49,6 +52,7 @@ export class MEXCClient implements CEXInterface {
     });
 
     if (!response.ok) {
+      console.log(await response.json());
       throw new Error(
         `MEXC API error: ${response.status} ${response.statusText}`
       );
